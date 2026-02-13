@@ -2,9 +2,14 @@ plugins {
     id 'application'
 }
 
-mainClassName = "gq.luma.bot.Luma"
+application {
+    mainClass = "gq.luma.bot.Luma"
+}
 
-sourceCompatibility = 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 repositories {
     mavenLocal()
@@ -12,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.javacord:javacord:3.9.0-SNAPSHOT'
+    implementation 'org.javacord:javacord:3.8.0'
     implementation 'com.kcthota:emoji4j:6.0'
     implementation group: 'com.mysql', name: 'mysql-connector-j', version: '9.3.0'
 
@@ -40,5 +45,3 @@ configurations.each {
         }
     }
 }
-
-targetCompatibility = JavaVersion.VERSION_11
