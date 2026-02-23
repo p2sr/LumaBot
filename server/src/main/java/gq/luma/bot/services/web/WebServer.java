@@ -512,7 +512,7 @@ public class WebServer implements Service {
 
         Undertow webpageServer = Undertow.builder()
                 .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
-                .addHttpListener(8000, "0.0.0.0")
+                .addHttpListener(80, "0.0.0.0")
                 .setHandler(new SessionAttachmentHandler(verifyWebpageHandler, sessionManager, cookieConfig))
                 .build();
 

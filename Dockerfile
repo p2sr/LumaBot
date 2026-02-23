@@ -43,5 +43,5 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 COPY --from=jre_build /javaruntime $JAVA_HOME
 
 WORKDIR /luma/server
-EXPOSE 8000
+EXPOSE 80
 ENTRYPOINT ./bin/server
