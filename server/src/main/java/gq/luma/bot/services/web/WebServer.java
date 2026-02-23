@@ -78,7 +78,7 @@ public class WebServer implements Service {
 
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
-            System.out.println(exchange.isRequestChannelAvailable());
+            logger.debug("Request channel available: {}", exchange.isRequestChannelAvailable());
             exchange.getResponseHeaders()
                     .add(new HttpString("Access-Control-Allow-Origin"), "*")
                     .add(new HttpString("Cache-Control"), "no-cache, no-store, must-revalidate")
