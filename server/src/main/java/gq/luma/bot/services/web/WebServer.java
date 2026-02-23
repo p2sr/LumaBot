@@ -397,7 +397,21 @@ public class WebServer implements Service {
                                     new UndertowWebContext(exchange));
                     exchange.endExchange();
                 }, securityConfig, "discord"))
-                .get("/callback", CallbackHandler.build(securityConfig, null, null))
+                .get("/callback", exchange -> {
+                    HttpHandler callback = CallbackHandler.build(securityConfig, null, null);
+                    try {
+                        callback.handleRequest(exchange);
+                    } catch (Exception e) {
+                        logger.error("Callback handler failed for request {}?{}", exchange.getRequestURI(), exchange.getQueryString(), e);
+                        try {
+                            exchange.getQueryParameters().forEach((k, v) -> logger.debug("callback param {} = {}", k, v));
+                        } catch (Exception ex) {
+                            logger.debug("Failed to log query parameters", ex);
+                        }
+                        exchange.setStatusCode(500);
+                        exchange.endExchange();
+                    }
+                })
                 .get("/logout", new LogoutHandler(securityConfig, "/"))
                 .get("/user/{did}", //new ProfileRestrictedHandler(null, securityConfig, false) {
                         //@Override
