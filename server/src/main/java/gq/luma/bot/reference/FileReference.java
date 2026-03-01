@@ -7,4 +7,6 @@ public class FileReference {
     public static File localesDir = new File("locales");
 
     public static String mySQLLocation = System.getenv().getOrDefault("MYSQL_HOST", "localhost");
+
+    public static File databaseInitSql = new File("luma-schema.sql");
 }

@@ -12,7 +12,7 @@ FROM gradle:jdk24-alpine AS server_build
 WORKDIR /luma
 COPY gradle gradle
 COPY server server
-COPY build.gradle settings.gradle gradlew gradlew.bat ./
+COPY build.gradle settings.gradle gradlew gradlew.bat luma-schema.sql ./
 
 RUN gradle installDist
 
@@ -34,6 +34,7 @@ WORKDIR /luma
 RUN mkdir -p web/dist
 COPY --from=web_build /luma/web/dist web/dist
 COPY --from=server_build /luma/server/build/install .
+COPY --from=server_build /luma/luma-schema.sql server/luma-schema.sql
 RUN mkdir server/locales
 COPY --from=server_build /luma/server/locales server/locales
 

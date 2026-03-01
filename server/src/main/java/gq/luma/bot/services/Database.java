@@ -103,6 +103,19 @@ public class Database implements Service {
 
         conn = DriverManager.getConnection("jdbc:mysql://" + FileReference.mySQLLocation + "/luma?user=" + KeyReference.sqlUser + "&password=" + KeyReference.sqlPass + "&autoReconnect=true");
 
+        // Create tables if they do not exist by executing schema SQL file.
+        try (Statement stmt = conn.createStatement()) {
+            String sql = new String(java.nio.file.Files.readAllBytes(FileReference.databaseInitSql.toPath()));
+            for (String statement : sql.split(";")) {
+                String trimmed = statement.trim();
+                if (trimmed.isEmpty()) continue;
+                stmt.execute(trimmed);
+            }
+        } catch (IOException | SQLException e) {
+            logger.error("Failed to initialize database: ", e);
+            throw new RuntimeException(e);
+        }
+
         getChannel = conn.prepareStatement("SELECT * FROM channels WHERE id = ?");
 
         getServer = conn.prepareStatement("SELECT * FROM servers WHERE id = ?");
