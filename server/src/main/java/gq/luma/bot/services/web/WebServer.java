@@ -400,6 +400,17 @@ public class WebServer implements Service {
                     exchange.endExchange();
                 }, securityConfig, "discord"))
                 .get("/callback", exchange -> {
+                    // If callback is requested without any query parameters, redirect to main page
+                    try {
+                        if (exchange.getQueryParameters().isEmpty()) {
+                            exchange.getResponseHeaders().put(Headers.LOCATION, "/");
+                            exchange.setStatusCode(302);
+                            exchange.endExchange();
+                            return;
+                        }
+                    } catch (Exception ignored) {
+                    }
+
                     HttpHandler callback = CallbackHandler.build(securityConfig, null, null);
                     try {
                         callback.handleRequest(exchange);

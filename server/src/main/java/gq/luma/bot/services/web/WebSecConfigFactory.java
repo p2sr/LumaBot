@@ -58,7 +58,7 @@ public class WebSecConfigFactory implements ConfigFactory {
         final OidcClient twitchClient = new OidcClient(twitchConfig);
         twitchClient.setMultiProfile(true);
         //twitchClient.setRedirectActionBuilder(new TwitchRedirectActionBuilder(twitchConfig, twitchClient));
-        twitchClient.setAuthenticator(new OidcAuthenticator(twitchConfig, twitchClient));
+        twitchClient.setAuthenticator(new TwitchOidcAuthenticator(twitchConfig, twitchClient));
         twitchClient.setName("twitch");
 
         final Clients clients = new Clients("https://luma.portal2.sr/callback", discordClient, steamAuthClient, twitchClient);

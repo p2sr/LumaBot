@@ -1,6 +1,6 @@
 # LumaBot
 
-![Discord Shield](https://discordapp.com/api/guilds/146404426746167296/widget.png?style=shield)
+[![Discord Shield](https://discordapp.com/api/guilds/146404426746167296/widget.png?style=shield)](https://discord.com/invite/hRwE4Zr)
 
 Discord Bot and web dashboard for verifying server members and other cool
 features like stream announcements, moderation tools, and more!
@@ -40,5 +40,3 @@ You'll need a Discord bot token, a MySQL database, and API keys from Steam and T
 ## #bot-spam `?l ping`
 
 What time can you get?
-
-[![Discord Invite](https://invidget.switchblade.xyz/hRwE4Zr)](https://discord.com/invite/hRwE4Zr)
