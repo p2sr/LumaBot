@@ -41,6 +41,8 @@ public class SRcomApi {
                                 jsonParser.close();
                             }
                             break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -102,6 +104,8 @@ public class SRcomApi {
                                 }
                             }
                             break;
+                        default:
+                            break;
                     }
                 }
                 System.err.println("Failed to find any matching run");
@@ -162,6 +166,8 @@ public class SRcomApi {
                                 connectionName = jsonParser.getValueAsString();
                                 japaneseStored = true;
                             }
+                            break;
+                        default:
                             break;
                     }
                 }

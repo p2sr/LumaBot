@@ -1,11 +1,11 @@
-![Discord Shield](https://discordapp.com/api/guilds/146404426746167296/widget.png?style=shield)
-
 # LumaBot
+
+![Discord Shield](https://discordapp.com/api/guilds/146404426746167296/widget.png?style=shield)
 
 Discord Bot and web dashboard for verifying server members and other cool
 features like stream announcements, moderation tools, and more!
 
-# Usage
+## Usage
 
 You'll need a Discord bot token, a MySQL database, and API keys from Steam and Twitch.
 
@@ -33,11 +33,11 @@ You'll need a Discord bot token, a MySQL database, and API keys from Steam and T
 3. Build and run the Docker image with
 
    ```sh
-   docker build -t lumabot .
-   docker run --env-file .env -p 80:80 --restart unless-stopped -d lumabot
+   docker build -t LumaBot .
+   docker run --env-file .env -p 80:80 --restart unless-stopped -d LumaBot
    ```
 
-# #bot-spam `?l ping`
+## #bot-spam `?l ping`
 
 What time can you get?
 
