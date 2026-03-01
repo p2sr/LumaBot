@@ -26,7 +26,14 @@ public class Luma {
     private static final Logger logger = LoggerFactory.getLogger(Luma.class);
 
     public static ScheduledExecutorService schedulerService = Executors.newScheduledThreadPool(12);
-    public static ExecutorService executorService = new ThreadPoolExecutor(4, Integer.MAX_VALUE, 5, TimeUnit.MINUTES, new SynchronousQueue<>());
+        // Bounded executor to avoid unbounded native thread creation (prevent OOM/native thread exhaustion)
+        public static ExecutorService executorService = new ThreadPoolExecutor(
+            4,
+            64,
+            5,
+            TimeUnit.MINUTES,
+            new java.util.concurrent.LinkedBlockingQueue<>(1000)
+        );
     public static OkHttpClient okHttpClient;
     public static JsonFactory jsonFactory;
 

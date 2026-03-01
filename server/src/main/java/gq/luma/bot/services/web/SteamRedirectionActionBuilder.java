@@ -32,11 +32,25 @@ public class SteamRedirectionActionBuilder implements RedirectionActionBuilder {
     @Override
     public Optional<RedirectionAction> getRedirectionAction(WebContext context, SessionStore sessionStore) {
         try {
+
             final List<?> discoveries = this.steamClient.getConsumerManager().discover(STEAM_USER_IDENT);
 
-            final DiscoveryInformation discoveryInformation = this.steamClient.getConsumerManager().associate(discoveries);
+            DiscoveryInformation discoveryInformation = null;
+            try {
+                discoveryInformation = this.steamClient.getConsumerManager().associate(discoveries);
+            } catch (Exception me) {
+                // Some Steam OpenID endpoints return responses lacking assoc_type; fall back to the first discovery result
+                logger.warn("OpenID associate failed (falling back to first discovery): {}", me.getMessage());
+                if (!discoveries.isEmpty()) {
+                    discoveryInformation = (DiscoveryInformation) discoveries.get(0);
+                }
+            }
 
-            sessionStore.set(context, this.steamClient.getDiscoveryInformationSessionAttributeName(), discoveryInformation);
+            if (discoveryInformation != null) {
+                sessionStore.set(context, this.steamClient.getDiscoveryInformationSessionAttributeName(), discoveryInformation);
+            } else {
+                throw new TechnicalException("Unable to determine OpenID discovery information for Steam login");
+            }
 
             final AuthRequest authRequest = this.steamClient.getConsumerManager().authenticate(discoveryInformation,
                     this.steamClient.computeFinalCallbackUrl(context));

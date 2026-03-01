@@ -260,13 +260,19 @@ public class WebServer implements Service {
                 //System.out.println("Connections: " + jsonConnections);
 
                 if(steamProfile != null) {
-                    //System.out.println("They also have a steam logged in, id=" + steamProfile.getId());
-                    GetPlayerSummariesRequest request = SteamWebApiRequestFactory.createGetPlayerSummariesRequest(List.of(steamProfile.getId()));
-                    GetPlayerSummaries summary = Luma.steamApi.steamWebApiClient.processRequest(request);
-                    String playerName = summary.getResponse().getPlayers().get(0).getPersonaname();
-                    String id = summary.getResponse().getPlayers().get(0).getSteamid();
-                    id = String.valueOf(Long.parseLong(id) | 0x100000000L);
-                    Luma.database.addVerifiedConnection(Long.parseLong(discordProfile.getId()), serverId, id, "steam", playerName, steamProfile.getLinkedId());
+                    try {
+                        // Use lightweight SteamApi helper to avoid java.net.http.HttpClient classloading issues
+                        java.util.Optional<gq.luma.bot.services.apis.SteamApi.PlayerSummary> summaryOpt = Luma.steamApi.getPlayerSummary(steamProfile.getId());
+                        if (summaryOpt.isPresent()) {
+                            gq.luma.bot.services.apis.SteamApi.PlayerSummary summary = summaryOpt.get();
+                            String playerName = summary.personaName;
+                            String id = summary.steamId;
+                            id = String.valueOf(Long.parseLong(id) | 0x100000000L);
+                            Luma.database.addVerifiedConnection(Long.parseLong(discordProfile.getId()), serverId, id, "steam", playerName, steamProfile.getLinkedId());
+                        }
+                    } catch (Exception ex) {
+                        logger.error("Failed to lookup Steam player summary", ex);
+                    }
                 }
 
                 if(twitchProfile != null) {
@@ -296,7 +302,7 @@ public class WebServer implements Service {
                     Luma.database.addVerifiedConnection(Long.parseLong(discordProfile.getId()), serverId, id, type, connectionObj.get("name").asString(), null);
                 }
 
-            } catch (IOException | SteamApiException e) {
+            } catch (IOException | RuntimeException e) {
                 e.printStackTrace();
                 return false;
             }

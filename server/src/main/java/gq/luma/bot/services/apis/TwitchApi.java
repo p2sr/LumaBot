@@ -38,6 +38,7 @@ public class TwitchApi implements Service {
     public TwitchClient client;
     public String appAccessToken;
 
+    // TODO: Don't hardcode these channel/message IDs
     private static final long STREAMS_CHANNEL = 595628684925206542L;
     private static final long START_MESSAGE = 596447974008160257L;
 
