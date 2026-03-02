@@ -34,7 +34,7 @@ public class DunceCommand {
     }
 
 
-    @Command(aliases = {"warn"}, description = "warn_description", usage = "", neededPerms = "CLEANUP", whilelistedGuilds = "146404426746167296")
+    @Command(aliases = {"warn"}, description = "warn_description", usage = "", neededPerms = "CLEANUP", whitelistedGuilds = "146404426746167296")
     public EmbedBuilder onWarn(CommandEvent event) {
         User targetUser = null;
 
@@ -135,7 +135,7 @@ public class DunceCommand {
                 .addField("Reason", reason.isEmpty() ? "*No reason given*" : reason);
     }
 
-    @Command(aliases = {"warnings"}, description = "warnings_description", usage = "", neededPerms = "CLEANUP", whilelistedGuilds = "146404426746167296")
+    @Command(aliases = {"warnings"}, description = "warnings_description", usage = "", neededPerms = "CLEANUP", whitelistedGuilds = "146404426746167296")
     public EmbedBuilder onWarnings(CommandEvent event) {
         User targetUser = null;
 

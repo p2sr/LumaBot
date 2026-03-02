@@ -64,11 +64,11 @@ public class CommandExecutor {
     }
 
     private boolean isUnderWhitelist(MCommand command, MessageCreateEvent event){
-        if(command.getCommand().whilelistedGuilds().isEmpty())
+        if(command.getCommand().whitelistedGuilds().isEmpty())
             return true;
         if(event.getServer().isEmpty())
             return false;
-        for(String guildId : command.getCommand().whilelistedGuilds().split(";")){
+        for(String guildId : command.getCommand().whitelistedGuilds().split(";")){
             if(guildId.equals(event.getServer().get().getIdAsString())){
                 return true;
             }

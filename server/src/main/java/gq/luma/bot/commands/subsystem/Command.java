@@ -18,5 +18,5 @@ public @interface Command {
 
     String neededPerms() default "";
 
-    String whilelistedGuilds() default "";
+    String whitelistedGuilds() default "";
 }
