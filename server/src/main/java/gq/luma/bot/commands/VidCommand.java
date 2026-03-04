@@ -5,6 +5,7 @@ import gq.luma.bot.Luma;
 import gq.luma.bot.commands.subsystem.Command;
 import gq.luma.bot.commands.subsystem.CommandEvent;
 import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,19 +18,23 @@ public class VidCommand {
     public String lookupVid(CommandEvent event) throws IOException {
         String prompt = URLEncoder.encode(event.getCommandRemainder(), Charset.defaultCharset());
 
-        InputStream responseStream = Luma.okHttpClient.newCall(
-                new Request.Builder().url("https://autorender.portal2.sr/api/v1/search?q=" + prompt).build()
-                ).execute().body().byteStream();
+        Request req = new Request.Builder().url("https://autorender.portal2.sr/api/v1/search?q=" + prompt).build();
+        try (Response resp = Luma.okHttpClient.newCall(req).execute()) {
+            if (!resp.isSuccessful() || resp.body() == null) {
+                return "No videos found matching this query :( https://tenor.com/view/hamster-crying-hamster-crying-rip-hamster-hamster-die-gif-19350296";
+            }
+            try (InputStream responseStream = resp.body().byteStream(); InputStreamReader reader = new InputStreamReader(responseStream)) {
+                var resultsObject = Json.parse(reader)
+                        .asObject().get("results");
 
-        var resultsObject = Json.parse(new InputStreamReader(responseStream))
-                .asObject().get("results");
+                if (resultsObject.isArray() && resultsObject.asArray().size() > 0) {
+                    int videoId = resultsObject.asArray().get(0).asObject().get("id").asInt();
 
-        if (resultsObject.isArray() && resultsObject.asArray().size() > 0) {
-            int videoId = resultsObject.asArray().get(0).asObject().get("id").asInt();
-
-            return "https://autorender.portal2.sr/video.html?v=" + videoId;
-        } else {
-            return "No videos found matching this query :( https://tenor.com/view/hamster-crying-hamster-crying-rip-hamster-hamster-die-gif-19350296";
+                    return "https://autorender.portal2.sr/video.html?v=" + videoId;
+                } else {
+                    return "No videos found matching this query :( https://tenor.com/view/hamster-crying-hamster-crying-rip-hamster-hamster-die-gif-19350296";
+                }
+            }
         }
     }
 }

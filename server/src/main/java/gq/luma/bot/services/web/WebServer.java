@@ -28,6 +28,8 @@ import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import io.undertow.util.PathTemplateMatch;
 import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
@@ -251,11 +253,18 @@ public class WebServer implements Service {
             logger.trace("Id: "+ discordProfile.getId());
             logger.trace("Name: " + discordProfile.getUsername() + "#" + discordProfile.getDiscriminator());
             //logger.trace("IP: " + exchange.getRequestHeaders().get("X-Forwarded-For").getFirst());
-            try {
-                String jsonConnections = Objects.requireNonNull(Luma.okHttpClient.newCall(new Request.Builder()
-                        .url("https://discord.com/api/v6/users/@me/connections")
-                        .addHeader("Authorization", "Bearer " + discordProfile.getAccessToken())
-                        .build()).execute().body()).string();
+            try (Response resp = Luma.okHttpClient.newCall(new Request.Builder()
+                    .url("https://discord.com/api/v6/users/@me/connections")
+                    .addHeader("Authorization", "Bearer " + discordProfile.getAccessToken())
+                    .build()).execute()) {
+                if (!resp.isSuccessful()) {
+                    return false;
+                }
+                ResponseBody respBody = resp.body();
+                if (respBody == null) {
+                    return false;
+                }
+                String jsonConnections = respBody.string();
 
                 //System.out.println("Connections: " + jsonConnections);
 
