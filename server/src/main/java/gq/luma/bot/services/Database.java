@@ -889,7 +889,8 @@ public class Database implements Service {
                 getVerifiedConnectionsByUser.setLong(2, serverId);
                 ResultSet rs = getVerifiedConnectionsByUser.executeQuery();
                 while (rs.next()) {
-                    if (rs.getString("id").equalsIgnoreCase(connectionId) && rs.getString("connection_name").equalsIgnoreCase(connectionName)) {
+                    if (rs.getInt("removed") == 0 && rs.getString("id").equalsIgnoreCase(connectionId) && rs.getString("connection_name").equalsIgnoreCase(connectionName)) {
+                        System.out.println("Connection " + connectionId + " of type " + connectionType + " for user " + userId + " on server " + serverId + " is already verified, skipping insertion.");
                         return;
                     }
                 }
