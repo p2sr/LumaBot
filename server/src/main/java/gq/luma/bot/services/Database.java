@@ -72,6 +72,7 @@ public class Database implements Service {
     private PreparedStatement getVerifiedConnectionsByType;
     private PreparedStatement getVerifiedConnectionsByTypeAndId;
     private PreparedStatement updateVerifiedConnectionRemovedByUserServerAndId;
+    private PreparedStatement updateVerifiedConnectionTokenByUserServerAndId;
     private PreparedStatement insertVerifiedConnection;
 
     private PreparedStatement getPingLeaderboard;
@@ -155,6 +156,7 @@ public class Database implements Service {
         getVerifiedConnectionsByType = conn.prepareStatement("SELECT * FROM verified_connections WHERE connection_type = ?");
         getVerifiedConnectionsByTypeAndId = conn.prepareStatement("SELECT * FROM verified_connections WHERE connection_type = ? AND id = ?");
         updateVerifiedConnectionRemovedByUserServerAndId = conn.prepareStatement("UPDATE verified_connections SET removed = ? WHERE user_id = ? AND server_id = ? AND id = ?");
+        updateVerifiedConnectionTokenByUserServerAndId = conn.prepareStatement("UPDATE verified_connections SET token = ? WHERE user_id = ? AND server_id = ? AND id = ?");
         insertVerifiedConnection = conn.prepareStatement("INSERT INTO verified_connections (user_id, server_id, id, connection_type, connection_name, token) VALUES (?,?,?,?,?,?)");
 
         getPingLeaderboard = conn.prepareStatement("SELECT * FROM ping_leaderboard ORDER BY `ping`");
@@ -816,6 +818,20 @@ public class Database implements Service {
         }
     }
 
+    public void updateConnectionToken(long discordId, long serverId, String id, String token) {
+        try {
+            synchronized (updateVerifiedConnectionTokenByUserServerAndId) {
+                updateVerifiedConnectionTokenByUserServerAndId.setString(1, token);
+                updateVerifiedConnectionTokenByUserServerAndId.setLong(2, discordId);
+                updateVerifiedConnectionTokenByUserServerAndId.setLong(3, serverId);
+                updateVerifiedConnectionTokenByUserServerAndId.setString(4, id);
+                updateVerifiedConnectionTokenByUserServerAndId.execute();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addUserRecord(long userId, long serverId, String accessToken) {
         try {
             synchronized (getUserRecordById) {
@@ -889,9 +905,16 @@ public class Database implements Service {
                 getVerifiedConnectionsByUser.setLong(2, serverId);
                 ResultSet rs = getVerifiedConnectionsByUser.executeQuery();
                 while (rs.next()) {
-                    if (rs.getInt("removed") == 0 && rs.getString("id").equalsIgnoreCase(connectionId) && rs.getString("connection_name").equalsIgnoreCase(connectionName)) {
-                        System.out.println("Connection " + connectionId + " of type " + connectionType + " for user " + userId + " on server " + serverId + " is already verified, skipping insertion.");
-                        return;
+                    if (rs.getString("id").equalsIgnoreCase(connectionId) && rs.getString("connection_name").equalsIgnoreCase(connectionName)) {
+                        if (rs.getInt("removed") == 0) {
+                            System.out.println("Connection " + connectionId + " of type " + connectionType + " for user " + userId + " on server " + serverId + " is already verified, skipping insertion.");
+                            return;
+                        } else {
+                            System.out.println("Connection " + connectionId + " of type " + connectionType + " for user " + userId + " on server " + serverId + " is already present but removed, un-removing and updating token.");
+                            setRemovedConnection(userId, serverId, connectionId, 0);
+                            updateConnectionToken(userId, serverId, connectionId, connectionToken);
+                            return;
+                        }
                     }
                 }
             }
