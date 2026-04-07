@@ -867,7 +867,15 @@ public class Database implements Service {
             synchronized (getUserConnectionAttemptsByIP) {
                 getUserConnectionAttemptsByIP.setString(1, ip);
                 ResultSet rs = getUserConnectionAttemptsByIP.executeQuery();
-                if (!rs.next()) {
+                // Check if this user has already attempted to connect from this IP
+                boolean insert = true;
+                while (rs.next()) {
+                    if (rs.getLong("user_id") == userId) {
+                        insert = false;
+                    }
+                }
+                if (insert) {
+                    // If not, insert a new record for this connection attempt
                     synchronized (insertUserConnectionAttempt) {
                         insertUserConnectionAttempt.setLong(1, userId);
                         insertUserConnectionAttempt.setLong(2, serverId);
