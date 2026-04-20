@@ -51,10 +51,13 @@ public class PinsService implements Service {
                                         .findAny().orElseGet(() -> this.createPinWebhook(pinsChannel))
                                         .orElseThrow(AssertionError::new);
 
-                                WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(pinnedMessage.getContent());
+                                WebhookMessageBuilder builder = pinnedMessage.toWebhookMessageBuilder().removeAllEmbeds();
                                 pinnedMessage.getEmbeds().forEach(embed -> {
                                     EmbedBuilder eb = new EmbedBuilder();
+                                    System.out.println("Pinned message embed:" + embed.getTitle().orElse("No title"));
                                     if (embed.getImage() != null) {
+                                        System.out.println("Pinned message embed image URL: " + embed.getImage().get().getUrl());
+                                        System.out.println("URL(toString): " + embed.getImage().get().getUrl().toString());
                                         eb.setImage(embed.getImage().get().getUrl().toString());
                                     }
                                     builder.addEmbed(eb);
