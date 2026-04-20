@@ -51,17 +51,28 @@ public class PinsService implements Service {
                                         .findAny().orElseGet(() -> this.createPinWebhook(pinsChannel))
                                         .orElseThrow(AssertionError::new);
 
-                                WebhookMessageBuilder builder = pinnedMessage.toWebhookMessageBuilder().removeAllEmbeds();
-                                pinnedMessage.getEmbeds().forEach(embed -> {
-                                    EmbedBuilder eb = new EmbedBuilder();
-                                    System.out.println("Pinned message embed:" + embed.getTitle().orElse("No title"));
-                                    if (embed.getImage() != null) {
-                                        System.out.println("Pinned message embed image URL: " + embed.getImage().get().getUrl());
-                                        System.out.println("URL(toString): " + embed.getImage().get().getUrl().toString());
-                                        eb.setImage(embed.getImage().get().getUrl().toString());
+                                // This is horrid. `.toWebhookMessageBuilder()` copies all
+                                // message components (including attachments) but the attachment
+                                // URLs are malformed (pngex...). So we have to make our own builder
+                                // and add the attachments ourself.
+                                WebhookMessageBuilder builder = new WebhookMessageBuilder();
+
+                                builder.setDisplayAuthor(pinnedMessage.getAuthor());
+                                builder.setDisplayAvatar(pinnedMessage.getAuthor().getAvatar());
+                                builder.setDisplayName(pinnedMessage.getAuthor().getDisplayName());
+                                StringBuilder content = new StringBuilder(pinnedMessage.getContent() == null ? "" : pinnedMessage.getContent());
+
+                                pinnedMessage.getAttachments().forEach(attachment -> {
+                                    if (attachment.isImage()) {
+                                        // Show images as embeds (Discord-style preview)
+                                        builder.addEmbeds(new EmbedBuilder().setUrl(attachment.getUrl().toString()));
+                                    } else {
+                                        // Preserve non-image files as links
+                                        content.append('\n').append(attachment.getUrl().toString());
                                     }
-                                    builder.addEmbed(eb);
                                 });
+
+                                builder.setContent(content.toString());
 
                                 Message pinNotification = builder
                                         .addEmbed(new EmbedBuilder()
