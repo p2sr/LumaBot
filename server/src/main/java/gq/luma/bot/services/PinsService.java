@@ -1,6 +1,8 @@
 package gq.luma.bot.services;
 
 import gq.luma.bot.Luma;
+
+import java.net.URI;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.Reaction;
@@ -64,7 +66,16 @@ public class PinsService implements Service {
 
                                 pinnedMessage.getAttachments().forEach(attachment -> {
                                     System.out.println("Pinnerino attach URL: " + attachment.getUrl().toString());
-                                    builder.addAttachment(attachment.getUrl());
+                                    // Remove query/params from the URL (strip everything after '?')
+                                    String raw = attachment.getUrl().toString();
+                                    int q = raw.indexOf('?');
+                                    String cleaned = q >= 0 ? raw.substring(0, q) : raw;
+                                    try {
+                                        builder.addAttachment(URI.create(cleaned).toURL());
+                                    } catch (Exception e) {
+                                        // fallback to original URL if something goes wrong
+                                        builder.addAttachment(attachment.getUrl());
+                                    }
                                 });
 
                                 builder.setContent(content.toString());
