@@ -4,6 +4,7 @@ import gq.luma.bot.Luma;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.Reaction;
+import org.javacord.api.entity.message.WebhookMessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.message.mention.AllowedMentionsBuilder;
 import org.javacord.api.entity.server.Server;
@@ -50,7 +51,16 @@ public class PinsService implements Service {
                                         .findAny().orElseGet(() -> this.createPinWebhook(pinsChannel))
                                         .orElseThrow(AssertionError::new);
 
-                                Message pinNotification = pinnedMessage.toWebhookMessageBuilder()
+                                WebhookMessageBuilder builder = new WebhookMessageBuilder().setContent(pinnedMessage.getContent());
+                                pinnedMessage.getEmbeds().forEach(embed -> {
+                                    EmbedBuilder eb = new EmbedBuilder();
+                                    if (embed.getImage() != null) {
+                                        eb.setImage(embed.getImage().get().getUrl().toString());
+                                    }
+                                    builder.addEmbed(eb);
+                                });
+
+                                Message pinNotification = builder
                                         .addEmbed(new EmbedBuilder()
                                                 .setColor(Color.RED)
                                                 .setDescription(reaction.getEmoji().getMentionTag() + " " + reaction.getCount() + " - [Jump!](" + pinnedMessage.getLink().toString() + ")"))
