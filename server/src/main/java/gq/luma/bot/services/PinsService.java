@@ -71,7 +71,9 @@ public class PinsService implements Service {
                                     int q = raw.indexOf('?');
                                     String cleaned = q >= 0 ? raw.substring(0, q) : raw;
                                     try {
-                                        builder.addAttachment(URI.create(cleaned).toURL());
+                                        builder.addEmbed(new EmbedBuilder()
+                                                .setImage(cleaned)
+                                                .setUrl(cleaned));
                                     } catch (Exception e) {
                                         // fallback to original URL if something goes wrong
                                         builder.addAttachment(attachment.getUrl());
