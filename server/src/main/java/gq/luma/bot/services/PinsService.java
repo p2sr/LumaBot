@@ -63,13 +63,8 @@ public class PinsService implements Service {
                                 StringBuilder content = new StringBuilder(pinnedMessage.getContent() == null ? "" : pinnedMessage.getContent());
 
                                 pinnedMessage.getAttachments().forEach(attachment -> {
-                                    if (attachment.isImage()) {
-                                        // Show images as embeds (Discord-style preview)
-                                        builder.addEmbeds(new EmbedBuilder().setUrl(attachment.getUrl().toString()));
-                                    } else {
-                                        // Preserve non-image files as links
-                                        content.append('\n').append(attachment.getUrl().toString());
-                                    }
+                                    System.out.println("Pinnerino attach URL: " + attachment.getUrl().toString());
+                                    builder.addAttachment(attachment.getUrl());
                                 });
 
                                 builder.setContent(content.toString());
