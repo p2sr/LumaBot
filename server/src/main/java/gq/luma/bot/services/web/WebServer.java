@@ -199,12 +199,12 @@ public class WebServer implements Service {
                         try {
                             User mention = Bot.api.getUserById(id).get(5, TimeUnit.SECONDS);
 
-                            altNoticeText.append("\n - Has the same IP address as user: ")
+                            altNoticeText.append(" - Has the same IP address as user: ")
                                     .append(mention.getMentionTag()).append(" (")
                                     .append(mention.getDiscriminatedName()).append(")\n");
                         } catch (InterruptedException | ExecutionException | TimeoutException e) {
                             e.printStackTrace();
-                            altNoticeText.append("\n - <@").append(id).append("> (lookup failed: ").append(e.getMessage()).append(") \n");
+                            altNoticeText.append(" - <@").append(id).append("> (lookup failed: ").append(e.getMessage()).append(") \n");
                         }
                     }
 
@@ -214,7 +214,7 @@ public class WebServer implements Service {
                                     .filter(checkUser -> !checkUser.equals(user))
                                     .forEach(checkUser -> {
                                         altNotice.set(true);
-                                        altNoticeText.append("\n - Shares a ").append(type)
+                                        altNoticeText.append(" - Shares a ").append(type)
                                                 .append(" account (").append(id).append(") with user: ")
                                                 .append(checkUser.getMentionTag())
                                                 .append(" (").append(checkUser.getDiscriminatedName()).append(")\n");
