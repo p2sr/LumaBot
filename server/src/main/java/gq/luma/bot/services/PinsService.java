@@ -71,17 +71,23 @@ public class PinsService implements Service {
                                     int q = raw.indexOf('?');
                                     String cleaned = q >= 0 ? raw.substring(0, q) : raw;
                                     if (attachment.isImage()) {
-                                        System.out.println("Pinnerino: image");
-                                        builder.addEmbed(new EmbedBuilder()
-                                               .setImage(cleaned)
-                                               .setUrl(cleaned));
+                                        try {
+                                            builder.addEmbed(new EmbedBuilder()
+                                                   .setImage(cleaned)
+                                                   .setUrl(cleaned));
+                                            System.out.println("Pinnerino: Image");
+                                        } catch (Exception e) {
+                                            System.out.println("Pinnerino: Image Exception: " + e.getMessage());
+                                            // fallback to original URL if something goes wrong
+                                            builder.addAttachment(attachment.getUrl());
+                                        }
                                     } else {
                                         try {
                                             builder.addEmbed(new EmbedBuilder()
                                                    .setUrl(cleaned));
                                             System.out.println("Pinnerino: URL");
                                         } catch (Exception e) {
-                                            System.out.println("Pinnerino: Exception: " + e.getMessage());
+                                            System.out.println("Pinnerino: URL Exception: " + e.getMessage());
                                             // fallback to original URL if something goes wrong
                                             builder.addAttachment(attachment.getUrl());
                                         }
