@@ -86,13 +86,10 @@ public class PinsService implements Service {
                                         }
                                     } else {
                                         try {
-                                            builder.addEmbed(new EmbedBuilder()
-                                                   .setUrl(cleaned));
+                                            builder.addAttachment(attachment.getUrl());
                                             System.out.println("Pinnerino: URL");
                                         } catch (Exception e) {
                                             System.out.println("Pinnerino: URL Exception: " + e.getMessage());
-                                            // fallback to original URL if something goes wrong
-                                            builder.addAttachment(attachment.getUrl());
                                         }
                                     }
                                 });
