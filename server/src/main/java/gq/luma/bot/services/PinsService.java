@@ -64,13 +64,16 @@ public class PinsService implements Service {
                                 builder.setDisplayName(pinnedMessage.getAuthor().getDisplayName());
                                 StringBuilder content = new StringBuilder(pinnedMessage.getContent() == null ? "" : pinnedMessage.getContent());
 
+                                pinnedMessage.getEmbeds().forEach(embed -> {
+                                    builder.addEmbed(embed.toBuilder());
+                                });
                                 pinnedMessage.getAttachments().forEach(attachment -> {
                                     System.out.println("Pinnerino attach URL: " + attachment.getUrl().toString());
                                     // Remove query/params from the URL (strip everything after '?')
                                     String raw = attachment.getUrl().toString();
                                     int q = raw.indexOf('?');
                                     String cleaned = q >= 0 ? raw.substring(0, q) : raw;
-                                    if (attachment.isImage()) {
+                                    if (attachment.isImage() && !(cleaned.endsWith(".mp4") || cleaned.endsWith(".webm"))) {
                                         try {
                                             builder.addEmbed(new EmbedBuilder()
                                                    .setImage(cleaned)
