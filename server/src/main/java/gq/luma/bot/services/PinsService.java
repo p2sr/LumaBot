@@ -70,13 +70,21 @@ public class PinsService implements Service {
                                     String raw = attachment.getUrl().toString();
                                     int q = raw.indexOf('?');
                                     String cleaned = q >= 0 ? raw.substring(0, q) : raw;
-                                    try {
+                                    if (attachment.isImage()) {
+                                        System.out.println("Pinnerino: image");
                                         builder.addEmbed(new EmbedBuilder()
-                                                .setImage(cleaned)
-                                                .setUrl(cleaned));
-                                    } catch (Exception e) {
-                                        // fallback to original URL if something goes wrong
-                                        builder.addAttachment(attachment.getUrl());
+                                               .setImage(cleaned)
+                                               .setUrl(cleaned));
+                                    } else {
+                                        try {
+                                            builder.addEmbed(new EmbedBuilder()
+                                                   .setUrl(cleaned));
+                                            System.out.println("Pinnerino: URL");
+                                        } catch (Exception e) {
+                                            System.out.println("Pinnerino: Exception: " + e.getMessage());
+                                            // fallback to original URL if something goes wrong
+                                            builder.addAttachment(attachment.getUrl());
+                                        }
                                     }
                                 });
 
