@@ -73,24 +73,14 @@ public class PinsService implements Service {
                                     String raw = attachment.getUrl().toString();
                                     int q = raw.indexOf('?');
                                     String cleaned = q >= 0 ? raw.substring(0, q) : raw;
-                                    if (attachment.isImage() && !(cleaned.endsWith(".mp4") || cleaned.endsWith(".webm"))) {
-                                        try {
-                                            builder.addEmbed(new EmbedBuilder()
-                                                   .setImage(cleaned)
-                                                   .setUrl(cleaned));
-                                            System.out.println("Pinnerino: Image");
-                                        } catch (Exception e) {
-                                            System.out.println("Pinnerino: Image Exception: " + e.getMessage());
-                                            // fallback to original URL if something goes wrong
-                                            builder.addAttachment(attachment.getUrl());
-                                        }
-                                    } else {
-                                        try {
-                                            builder.addAttachment(attachment.getUrl());
-                                            System.out.println("Pinnerino: URL");
-                                        } catch (Exception e) {
-                                            System.out.println("Pinnerino: URL Exception: " + e.getMessage());
-                                        }
+                                   try {
+                                        builder.addAttachment(URI.create(cleaned).toURL());
+                                    } catch (Exception e) {
+                                        System.out.println("Pinnerino: Exception: " + e.getMessage());
+                                        builder.addEmbed(new EmbedBuilder()
+                                                .setColor(Color.GRAY)
+                                                .setTitle("Internal Error")
+                                                .setDescription("An error occurred while attaching a file."));
                                     }
                                 });
 
