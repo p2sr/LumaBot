@@ -65,6 +65,8 @@ public class PinsService implements Service {
                                 builder.setDisplayName(pinnedMessage.getAuthor().getDisplayName());
                                 StringBuilder content = new StringBuilder(pinnedMessage.getContent() == null ? "" : pinnedMessage.getContent());
 
+                                builder.setContent(content.toString());
+
                                 pinnedMessage.getEmbeds().forEach(embed -> {
                                     builder.addEmbed(embed.toBuilder());
                                 });
@@ -89,8 +91,7 @@ public class PinsService implements Service {
                                     }
                                 });
 
-                                builder.setContent(content.toString());
-
+                                System.out.println("Pinnerino: Sending pinned message");
                                 Message pinNotification = builder
                                         .addEmbed(new EmbedBuilder()
                                                 .setColor(Color.RED)
