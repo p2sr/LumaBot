@@ -3,6 +3,7 @@ package gq.luma.bot.services;
 import gq.luma.bot.Luma;
 
 import java.net.URI;
+import java.net.URL;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.Reaction;
@@ -73,8 +74,12 @@ public class PinsService implements Service {
                                     String raw = attachment.getUrl().toString();
                                     int q = raw.indexOf('?');
                                     String cleaned = q >= 0 ? raw.substring(0, q) : raw;
-                                   try {
-                                        builder.addAttachment(URI.create(cleaned).toURL());
+                                    System.out.println("Pinnerino cleaned URL: " + cleaned);
+                                    try {
+                                        URL cleanedUrl = URI.create(cleaned).toURL();
+                                        builder.addEmbed(new EmbedBuilder()
+                                               .setUrl(cleaned));
+                                        builder.addAttachment(cleanedUrl);
                                     } catch (Exception e) {
                                         System.out.println("Pinnerino: Exception: " + e.getMessage());
                                         builder.addEmbed(new EmbedBuilder()
